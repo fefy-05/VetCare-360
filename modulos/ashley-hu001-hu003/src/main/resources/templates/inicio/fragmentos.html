@@ -1,0 +1,85 @@
+<!-- Fragmento: panel informativo del cliente -->
+<main th:fragment="inicio" class="bg-body-tertiary min-vh-100" style="margin-left: 260px; padding-top: 56px;">
+    <div class="p-4">
+
+        <div th:if="${ok}" class="alert alert-success" th:text="${ok}"></div>
+
+        <!-- Saludo y botón solicitar cita -->
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <h1 class="h2 fw-semibold text-success-emphasis mb-1" th:text="|${saludo}, ${nombre}|">Buenos días, nombre</h1>
+                <p class="text-secondary mb-0">Un resumen de tus compañeros favoritos y sus cuidados.</p>
+            </div>
+            <a href="/citas" class="btn btn-success fw-semibold">+ Solicitar cita</a>
+        </div>
+
+        <!-- Banner de mensaje de bienvenioda-->
+        <div class="rounded-4 bg-success-subtle p-4 mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <h2 class="h5 fw-semibold text-success-emphasis mb-1">Su bienestar, a tu alcance.</h2>
+                <p class="small text-secondary mb-0">Desde los chequeos hasta los momentos importantes, estamos aquí para tus mascotas.</p>
+            </div>
+            <div class="d-flex gap-4 text-center">
+                <div>
+                    <div class="h4 fw-semibold mb-0">0</div>
+                    <div class="small text-secondary">Mascotas registradas</div>
+                </div>
+                <div>
+                    <div class="h4 fw-semibold mb-0">0</div>
+                    <div class="small text-secondary">Citas registradas</div>
+                </div>
+                <div>
+                    <div class="h4 fw-semibold mb-0">0</div>
+                    <div class="small text-secondary">Solicitudes pendientes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mascotas -->
+        <section class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="h5 fw-semibold mb-0">Tus mascotas / 00</h2>
+                <a href="/mascotas" class="small fw-semibold text-success text-decoration-none">+ Añadir mascota</a>
+            </div>
+
+            <!-- Aquí irán las tarjetas de mascotas cuando exista el módulo de mascotas -->
+            <div class="card rounded-4 text-center py-5 px-3 bg-white" style="border: 2px dashed #b7d3c6;">
+                <div class="fs-1 mb-2">🐾</div>
+                <h3 class="h5 fw-semibold text-success-emphasis">No hay mascotas registradas</h3>
+                <p class="text-secondary mx-auto mb-4" style="max-width: 420px;">
+                    Registra a tu mascota y ten su historial,
+                    sus vacunas y sus citas siempre a la mano.
+                </p>
+                <div>
+                    <a href="/mascotas" class="btn btn-success">Agregar a mi mascota</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Citas -->
+        <section class="mb-4">
+            <div class="card border rounded-4 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+                    <h2 class="h5 fw-semibold mb-0">Citas</h2>
+                    <a href="/citas" class="small fw-semibold text-success text-decoration-none">Ver todas &rarr;</a>
+                </div>
+
+                <!-- Fragmento modulo de citas  -->
+                <div class="text-center py-5 px-3">
+                    <h3 class="h5 fw-semibold text-success-emphasis">No hay citas programadas</h3>
+                    <p class="text-secondary mx-auto mb-4" style="max-width: 420px;">
+                        Reserva una cita y mantén a tu mascota sana y feliz.
+                    </p>
+                    <div>
+                        <a href="/citas" class="btn btn-outline-success">Reservar una cita</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Acceso a cambio de contraseña -->
+        <p class="small text-secondary mb-0">
+            ¿Quieres actualizar tu contraseña? <a href="/cambiar-clave" class="text-success">Cámbiala aquí</a>.
+        </p>
+    </div>
+</main>
