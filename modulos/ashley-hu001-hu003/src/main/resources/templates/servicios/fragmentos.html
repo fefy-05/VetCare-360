@@ -1,0 +1,85 @@
+<!-- Fragmento #1: listado de servicios en tarjetas pequeñas -->
+<main th:fragment="servicios" class="bg-body-tertiary min-vh-100" style="margin-left: 260px; padding-top: 56px;">
+    <div class="p-4">
+
+        <!-- Mensajes de resultado (éxito / error) -->
+        <div th:if="${ok}" class="alert alert-success" th:text="${ok}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Título y botón agregar (solo ADMIN) -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 fw-semibold text-success-emphasis mb-1">Servicios</h1>
+                <p class="text-secondary mb-0">Lo que ofrece nuestra veterinaria para el cuidado de tu mascota.</p>
+            </div>
+            <a sec:authorize="hasRole('ADMIN')" th:href="@{/servicios/nuevo}" class="btn btn-success fw-semibold">+ Agregar servicio</a>
+        </div>
+
+        <!-- Tarjetas de servicios -->
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3">
+
+            <div class="col" th:each="s : ${servicios}">
+                <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden">
+
+                    <!-- Imagen del servicio (si no tiene, se muestra la inicial) -->
+                    <img th:if="${s.imagen != null}" th:src="${s.imagen}" th:alt="${s.nombre}"
+                         class="card-img-top" style="height: 130px; object-fit: cover;">
+                    <div th:unless="${s.imagen != null}"
+                         class="bg-success-subtle text-success-emphasis d-flex align-items-center justify-content-center"
+                         style="height: 130px;">
+                        <span class="display-5 fw-semibold" th:text="${#strings.substring(s.nombre, 0, 1)}">G</span>
+                    </div>
+
+                    <!-- Título -->
+                    <div class="card-body py-3">
+                        <h6 class="card-title fw-semibold mb-0" th:text="${s.nombre}">Servicio</h6>
+                    </div>
+
+                    <!-- Editar / eliminar (solo ADMIN) -->
+                    <div sec:authorize="hasRole('ADMIN')" class="card-footer bg-white border-0 d-flex gap-2 pt-0 pb-3">
+                        <a th:href="@{/servicios/{id}/editar(id=${s.id})}" class="btn btn-sm btn-outline-success">Editar</a>
+                        <form th:action="@{/servicios/{id}/eliminar(id=${s.id})}" method="post"
+                              onsubmit="return confirm('¿Eliminar este servicio?');">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Mensaje cuando no hay servicios -->
+        <div th:if="${#lists.isEmpty(servicios)}" class="text-center text-secondary py-5">
+            Todavía no hay servicios registrados.
+        </div>
+    </div>
+</main>
+
+<!-- Fragmento #2: formulario para agregar o editar un servicio (solo ADMIN) -->
+<main th:fragment="formulario" class="bg-body-tertiary min-vh-100" style="margin-left: 260px; padding-top: 56px;">
+    <div class="p-4">
+        <h1 class="h2 fw-semibold text-success-emphasis mb-4" th:text="${titulo}">Agregar servicio</h1>
+
+        <div class="card border-0 shadow-sm rounded-4" style="max-width: 680px;">
+            <div class="card-body p-4">
+                <form method="post" th:action="@{${accion}}" th:object="${servicioForm}">
+
+                    <label class="form-label">Nombre del servicio</label>
+                    <input class="form-control" th:field="*{nombre}" maxlength="100" required>
+                    <div class="text-danger small" th:errors="*{nombre}"></div>
+
+                    <label class="form-label mt-3">Imagen (opcional)</label>
+                    <input class="form-control" th:field="*{imagen}" placeholder="/img/servicios/grooming.jpg o https://...">
+                    <div class="form-text">
+                        Una ruta de tu proyecto (por ejemplo /img/servicios/grooming.jpg) o una dirección que empiece con https://.
+                        Si la dejas vacía, la tarjeta muestra la inicial del servicio.
+                    </div>
+                    <div class="text-danger small" th:errors="*{imagen}"></div>
+
+                    <button type="submit" class="btn btn-success mt-4">Guardar</button>
+                    <a th:href="@{/servicios}" class="btn btn-secondary mt-4">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>

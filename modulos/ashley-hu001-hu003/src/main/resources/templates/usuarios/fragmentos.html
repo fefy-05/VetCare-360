@@ -1,0 +1,124 @@
+<!-- fragmento#1 para listado de usuarios -->
+<main th:fragment="usuarios" class="bg-body-tertiary min-vh-100" style="margin-left: 260px; padding-top: 56px;">
+    <div class="p-4">
+
+        <!-- Mensajes de resultado (éxito / error) -->
+        <div th:if="${ok}" class="alert alert-success" th:text="${ok}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+        <!-- Título y botón exportar -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="h2 fw-semibold text-success-emphasis mb-0">Usuarios registrados</h1>
+            <button type="button" class="btn btn-light border fw-semibold">Exportar usuarios</button>
+        </div>
+
+        <!-- Tarjeta principal -->
+        <div class="card border rounded-4 shadow-sm overflow-hidden">
+
+            <!-- Pestañas por estado -->
+            <ul class="nav nav-underline border-bottom px-3 pt-2">
+                <li class="nav-item">
+                    <a class="nav-link active text-success-emphasis" href="#">
+                        Todos <span class="badge bg-success-subtle text-success-emphasis ms-1" th:text="${#lists.size(usuarios)}">0</span>
+                    </a>
+                </li>
+                <li class="nav-item"><a class="nav-link text-secondary" href="#">Activo</a></li>
+                <li class="nav-item"><a class="nav-link text-secondary" href="#">Sin verificar</a></li>
+                <li class="nav-item"><a class="nav-link text-secondary" href="#">Suspendido</a></li>
+            </ul>
+
+            <!-- Buscador y filtros -->
+            <div class="d-flex flex-wrap gap-2 p-3">
+                <input type="search" class="form-control flex-grow-1" style="min-width: 240px; width: auto;"
+                       placeholder="Buscar por nombre o correo">
+                <select class="form-select" style="width: auto;">
+                    <option selected>Estado: Todos</option>
+                    <option>Activo</option>
+                    <option>Sin verificar</option>
+                    <option>Suspendido</option>
+                </select>
+                <input type="date" class="form-control" style="width: auto;" aria-label="Fecha de registro">
+                <button type="button" class="btn btn-light border fw-semibold">Filtros</button>
+            </div>
+
+            <!-- Tabla de usuarios -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr class="text-uppercase text-secondary" style="font-size: .7rem;">
+                            <th class="ps-3" style="width: 40px;"><input class="form-check-input" type="checkbox"></th>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Registro</th>
+                            <th class="text-end pe-3">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="small">
+
+                        <!-- Una fila por cada usuario registrado -->
+                        <tr th:each="u : ${usuarios}">
+                            <td class="ps-3"><input class="form-check-input" type="checkbox"></td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle bg-success-subtle text-success-emphasis fw-semibold d-flex align-items-center justify-content-center flex-shrink-0"
+                                         style="width: 36px; height: 36px; font-size: .75rem;" th:text="${u.iniciales}">JS</div>
+                                    <div class="lh-sm">
+                                        <div class="fw-semibold" th:text="${u.nombre}">Nombre</div>
+                                        <div class="text-secondary" style="font-size: .7rem;" th:text="${u.correo}">correo@email.com</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="badge rounded-pill bg-success-subtle text-success-emphasis" th:text="${u.rol}">CLIENTE</span></td>
+                            <td>
+                                <span th:if="${u.fechaRegistro != null}" th:text="${#temporals.format(u.fechaRegistro, 'dd/MM/yyyy')}">12/09/2026</span>
+                                <span th:unless="${u.fechaRegistro != null}">&mdash;</span>
+                            </td>
+
+                            <!-- Acciones: no se muestran sobre tu propia cuenta -->
+                            <td class="text-end pe-3">
+                                <span th:if="${u.correo == correoActual}" class="text-secondary">Tu cuenta</span>
+
+                                <div th:unless="${u.correo == correoActual}" class="d-inline-flex gap-2 justify-content-end">
+
+                                    <!-- Asignar rol ADMIN (si hoy es CLIENTE) -->
+                                    <form th:if="${u.rol == 'CLIENTE'}" th:action="@{/usuarios/{id}/rol(id=${u.id})}" method="post">
+                                        <input type="hidden" name="rol" value="ADMIN">
+                                        <button type="submit" class="btn btn-sm btn-outline-success">Hacer admin</button>
+                                    </form>
+
+                                    <!-- Quitar rol ADMIN (si hoy es ADMIN) -->
+                                    <form th:if="${u.rol == 'ADMIN'}" th:action="@{/usuarios/{id}/rol(id=${u.id})}" method="post">
+                                        <input type="hidden" name="rol" value="CLIENTE">
+                                        <button type="submit" class="btn btn-sm btn-outline-secondary">Quitar admin</button>
+                                    </form>
+
+                                    <!-- Eliminar usuario (con confirmación) -->
+                                    <form th:action="@{/usuarios/{id}/eliminar(id=${u.id})}" method="post"
+                                          onsubmit="return confirm('¿Eliminar este usuario? Esta acción no se puede deshacer.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Mensaje cuando no hay usuarios -->
+                        <tr th:if="${#lists.isEmpty(usuarios)}">
+                            <td colspan="5" class="text-center text-secondary py-4">Todavía no hay usuarios registrados.</td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pie: contador -->
+            <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                <small class="text-secondary" th:text="'Mostrando ' + ${#lists.size(usuarios)} + ' usuarios registrados'">Mostrando 0 usuarios registrados</small>
+            </div>
+        </div>
+
+        <!-- Nota de administración -->
+        <p class="text-secondary mt-3 mb-0" style="font-size: .75rem;">
+            Vista exclusiva de administración. Los datos personales solo deben usarse para coordinar la atención veterinaria.
+        </p>
+    </div>
+</main>

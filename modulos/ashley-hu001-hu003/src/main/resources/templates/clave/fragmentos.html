@@ -1,0 +1,22 @@
+<!-- Fragmento: formulario para cambiar la contraseña (usuario con sesión) -->
+<main th:fragment="cambiarClave" class="bg-body-tertiary min-vh-100" style="margin-left: 260px; padding-top: 56px;">
+    <div class="p-4">
+        <div class="card shadow-sm" style="max-width:680px">
+            <div class="card-body p-4">
+                <h2>Cambiar contraseña</h2>
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+                <form method="post" th:action="@{/cambiar-clave}" th:object="${cambioClaveForm}">
+                    <label class="mt-3">Contraseña actual</label>
+                    <input type="password" class="form-control" th:field="*{actual}" required>
+                    <label class="mt-3">Nueva contraseña</label>
+                    <input type="password" class="form-control" th:field="*{nueva}" required minlength="8">
+                    <div class="text-danger" th:errors="*{nueva}"></div>
+                    <label class="mt-3">Confirmar contraseña</label>
+                    <input type="password" class="form-control" th:field="*{confirmar}" required>
+                    <button class="btn btn-success mt-4">Guardar nueva contraseña</button>
+                    <a href="/inicio" class="btn btn-secondary mt-4">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</main>
