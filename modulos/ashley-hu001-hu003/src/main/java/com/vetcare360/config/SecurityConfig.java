@@ -14,6 +14,7 @@ public class SecurityConfig {
     .requestMatchers("/usuarios/**").hasRole("ADMIN")
     .requestMatchers(HttpMethod.GET,"/servicios").authenticated()
     .requestMatchers("/servicios/**").hasRole("ADMIN")
+    .requestMatchers("/propietarios/**").authenticated()
     .anyRequest().authenticated())
    .formLogin(f->f.loginPage("/login").defaultSuccessUrl("/inicio",true).permitAll())
    .logout(l->l.logoutSuccessUrl("/login?logout").permitAll())

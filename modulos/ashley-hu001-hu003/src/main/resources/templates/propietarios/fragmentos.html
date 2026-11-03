@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+    <body>
+
+        <!-- Listado de propietarios -->
+        <main th:fragment="propietarios"
+              class="bg-body-tertiary min-vh-100"
+              style="margin-left: 260px; padding-top: 56px;">
+            <div class="p-4">
+
+                <!-- Título y botón de registro -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                    <h1 class="h2 fw-semibold text-success-emphasis mb-0">
+                        Propietarios registrados
+                    </h1>
+
+                    <a th:href="@{/propietarios/nuevo}"
+                       class="btn btn-success fw-semibold">
+                        + Registrar propietario
+                    </a>
+                </div>
+
+                <!-- Mensajes -->
+                <div th:if="${mensaje}"
+                     class="alert alert-success"
+                     th:text="${mensaje}">
+                </div>
+
+                <div th:if="${error}"
+                     class="alert alert-danger"
+                     th:text="${error}">
+                </div>
+
+                <!-- Tarjeta principal -->
+                <div class="card border rounded-4 shadow-sm overflow-hidden">
+
+                    <!-- Encabezado -->
+                    <div class="d-flex justify-content-between align-items-center border-bottom p-3">
+                        <div>
+                            <h2 class="h6 fw-semibold mb-0">
+                                Directorio de propietarios
+                            </h2>
+                            <small class="text-secondary">
+                                Información de contacto de los propietarios registrados.
+                            </small>
+                        </div>
+
+                        <span class="badge bg-success-subtle text-success-emphasis rounded-pill"
+                              th:text="${#lists.size(propietarios)} + ' registrados'">
+                            0 registrados
+                        </span>
+                    </div>
+
+                    <!-- Tabla -->
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+                                <tr class="text-uppercase text-secondary"
+                                    style="font-size: .7rem;">
+                                    <th class="ps-3">Identificación</th>
+                                    <th>Nombre</th>
+                                    <th>Apellidos</th>
+                                    <th>Correo electrónico</th>
+                                    <th>Teléfono</th>
+                                    <th>Dirección</th>
+                                    <th class="text-center">Acciones</th>
+                                </tr>
+                            </thead>
+
+                            <tbody class="small">
+
+                                <tr th:each="p : ${propietarios}">
+
+                                    <td class="ps-3 fw-semibold"
+                                        th:text="${p.identificacion}">
+                                    </td>
+
+                                    <td th:text="${p.nombre}"></td>
+                                    <td th:text="${p.apellidos}"></td>
+                                    <td th:text="${p.correo}"></td>
+                                    <td th:text="${p.telefono}"></td>
+                                    <td th:text="${p.direccion}"></td>
+
+                                    <!-- Acciones -->
+                                    <td class="text-center">
+                                        <div class="d-flex justify-content-center gap-2">
+
+                                            <a th:href="@{/propietarios/editar/{id}(id=${p.id})}"
+                                               class="btn btn-sm btn-outline-primary">
+                                                Editar
+                                            </a>
+
+                                            <form th:action="@{/propietarios/eliminar/{id}(id=${p.id})}"
+                                                  method="post"
+                                                  onsubmit="return confirm('¿Está seguro de que desea eliminar este propietario?');">
+
+                                                <button type="submit"
+                                                        class="btn btn-sm btn-outline-danger">
+                                                    Eliminar
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+                                    </td>
+
+                                </tr>
+
+                                <!-- Estado vacío -->
+                                <tr th:if="${#lists.isEmpty(propietarios)}">
+                                    <td colspan="7"
+                                        class="text-center text-secondary py-5">
+
+                                        <div class="fw-semibold mb-1">
+                                            Todavía no hay propietarios registrados.
+                                        </div>
+
+                                        <small>
+                                            Utiliza el botón «Registrar propietario» para agregar el primero.
+                                        </small>
+
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pie de la tarjeta -->
+                    <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                        <small class="text-secondary"
+                               th:text="'Mostrando ' + ${#lists.size(propietarios)} + ' propietarios registrados'">
+                            Mostrando 0 propietarios registrados
+                        </small>
+                    </div>
+
+                </div>
+
+                <!-- Nota informativa -->
+                <p class="text-secondary mt-3 mb-0" style="font-size: .75rem;">
+                    Los datos personales de los propietarios deben utilizarse únicamente
+                    para coordinar la atención veterinaria.
+                </p>
+
+            </div>
+        </main>
+
+        <!-- Formulario de propietarios -->
+        <main th:fragment="formulario"
+              class="bg-body-tertiary min-vh-100"
+              style="margin-left: 260px; padding-top: 56px;">
+
+            <div class="p-4">
+
+                <div class="mb-4">
+                    <h1 class="h2 fw-semibold text-success-emphasis mb-1"
+                        th:text="${idPropietario != null ? 'Editar propietario' : 'Registrar propietario'}">
+                        Registrar propietario
+                    </h1>
+
+                    <p class="text-secondary mb-0"
+                       th:text="${idPropietario != null ? 'Modifica la información del propietario.' : 'Completa la información para registrar un nuevo propietario.'}">
+                        Completa la información para registrar un nuevo propietario.
+                    </p>
+                </div>
+
+                <!-- Mensajes -->
+                <div th:if="${error}"
+                     class="alert alert-danger"
+                     th:text="${error}">
+                </div>
+
+                <div class="card border rounded-4 shadow-sm">
+                    <div class="card-body p-4">
+
+                        <form th:action="${idPropietario != null} ? @{/propietarios/actualizar/{id}(id=${idPropietario})} : @{/propietarios/guardar}"
+                              th:object="${propietarioForm}"
+                              method="post">
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Identificación
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{identificacion}">
+
+                                <small class="text-danger"
+                                       th:errors="*{identificacion}">
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Nombre
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{nombre}">
+
+                                <small class="text-danger"
+                                       th:errors="*{nombre}">
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Apellidos
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{apellidos}">
+
+                                <small class="text-danger"
+                                       th:errors="*{apellidos}">
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Correo electrónico
+                                </label>
+
+                                <input type="email"
+                                       class="form-control"
+                                       th:field="*{correo}">
+
+                                <small class="text-danger"
+                                       th:errors="*{correo}">
+                                </small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">
+                                    Teléfono
+                                </label>
+
+                                <input type="text"
+                                       class="form-control"
+                                       th:field="*{telefono}">
+
+                                <small class="text-danger"
+                                       th:errors="*{telefono}">
+                                </small>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-semibold">
+                                    Dirección
+                                </label>
+
+                                <textarea class="form-control"
+                                          rows="3"
+                                          th:field="*{direccion}">
+                                </textarea>
+
+                                <small class="text-danger"
+                                       th:errors="*{direccion}">
+                                </small>
+                            </div>
+
+                            <!-- Botones -->
+                            <div class="d-flex flex-wrap gap-2">
+
+                                <button type="submit"
+                                        class="btn btn-success fw-semibold"
+                                        th:text="${idPropietario != null ? 'Actualizar propietario' : 'Guardar propietario'}">
+                                    Guardar propietario
+                                </button>
+                                <a th:href="@{/propietarios}"
+                                   class="btn btn-light border fw-semibold">
+                                    Cancelar
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </body>
+</html>
+
