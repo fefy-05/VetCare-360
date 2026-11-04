@@ -12,8 +12,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@RequestMapping("/mascotas")
 @Controller
 public class MascotaController {
 
@@ -26,20 +28,20 @@ public class MascotaController {
         this.propietarioRepository = propietarioRepository;
     }
 
-    @GetMapping("/mascotas")
+    @GetMapping
     public String listado(Model model) {
         model.addAttribute("mascotas", mascotaService.listar());
         return "mascotas/listado";
     }
 
-    @GetMapping("/mascotas/nuevo")
+    @GetMapping("/nuevo")
     public String nuevo(Model model) {
         model.addAttribute("mascotaForm", new MascotaForm());
         cargarPropietarios(model);
         return "mascotas/formulario";
     }
 
-    @PostMapping("/mascotas/guardar")
+    @PostMapping("/guardar")
     public String guardar(
             @Valid @ModelAttribute("mascotaForm") MascotaForm mascotaForm,
             BindingResult resultado,
@@ -66,7 +68,7 @@ public class MascotaController {
     }
 
     // Mostrar formulario de edición
-    @GetMapping("/mascotas/editar/{id}")
+    @GetMapping("/editar/{id}")
     public String editar(
             @PathVariable Long id,
             Model model,
@@ -96,7 +98,7 @@ public class MascotaController {
     }
 
     // Actualizar mascota
-    @PostMapping("/mascotas/actualizar/{id}")
+    @PostMapping("/actualizar/{id}")
     public String actualizar(
             @PathVariable Long id,
             @Valid @ModelAttribute("mascotaForm") MascotaForm mascotaForm,
@@ -128,7 +130,7 @@ public class MascotaController {
     }
 
     // Eliminar mascota
-    @PostMapping("/mascotas/eliminar/{id}")
+    @PostMapping("/eliminar/{id}")
     public String eliminar(
             @PathVariable Long id,
             RedirectAttributes redirectAttributes) {

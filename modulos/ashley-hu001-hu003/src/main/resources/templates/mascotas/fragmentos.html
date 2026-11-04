@@ -1,342 +1,321 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-    <body>
 
-        <!-- Listado de mascotas -->
-        <main th:fragment="mascotas"
-              class="bg-body-tertiary min-vh-100"
-              style="margin-left: 260px; padding-top: 56px;">
-            <div class="p-4">
+<body>
 
-                <!-- Título y botón de registro -->
-                <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-                    <h1 class="h2 fw-semibold text-success-emphasis mb-0">
-                        Mascotas registradas
-                    </h1>
+    <!-- Listado de mascotas -->
+    <main th:fragment="mascotas" class="bg-body-tertiary min-vh-100" style="margin-left: 260px; padding-top: 56px;">
 
-                    <a th:href="@{/mascotas/nuevo}"
-                       class="btn btn-success fw-semibold">
-                        + Registrar mascota
-                    </a>
+        <div class="p-4">
+
+            <!-- Título y botón de registro -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+                <h1 class="h2 fw-semibold text-success-emphasis mb-0">
+                    Mascotas registradas
+                </h1>
+
+                <a th:href="@{/mascotas/nuevo}" class="btn btn-success fw-semibold">
+                    + Registrar mascota
+                </a>
+            </div>
+
+            <!-- Mensajes -->
+            <div th:if="${mensaje}" class="alert alert-success" th:text="${mensaje}">
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}">
+            </div>
+
+            <!-- Tarjeta principal -->
+            <div class="card border rounded-4 shadow-sm overflow-hidden">
+
+                <div class="d-flex justify-content-between align-items-center border-bottom p-3">
+                    <div>
+                        <h2 class="h6 fw-semibold mb-0">
+                            Directorio de mascotas
+                        </h2>
+                        <small class="text-secondary">
+                            Mascotas y sus respectivos propietarios.
+                        </small>
+                    </div>
+
+                    <span class="badge bg-success-subtle text-success-emphasis rounded-pill"
+                        th:text="${#lists.size(mascotas)} + ' registradas'">
+                        0 registradas
+                    </span>
                 </div>
 
-                <!-- Mensajes -->
-                <div th:if="${mensaje}"
-                     class="alert alert-success"
-                     th:text="${mensaje}">
+                <!-- Tabla -->
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+                            <tr class="text-uppercase text-secondary" style="font-size: .7rem;">
+                                <th class="ps-3">Nombre</th>
+                                <th>Especie</th>
+                                <th>Raza</th>
+                                <th>Sexo</th>
+                                <th>Fecha de nacimiento</th>
+                                <th>Propietario</th>
+                                <th class="text-center">Acciones</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="small">
+
+                            <tr th:each="m : ${mascotas}">
+
+                                <td class="ps-3 fw-semibold" th:text="${m.nombre}">
+                                </td>
+
+                                <td th:text="${m.especie}"></td>
+
+                                <td>
+                                    <span th:if="${m.raza != null and !m.raza.isEmpty()}" th:text="${m.raza}">
+                                    </span>
+
+                                    <span th:if="${m.raza == null or m.raza.isEmpty()}" class="text-secondary">
+                                        —
+                                    </span>
+                                </td>
+
+                                <td th:text="${m.sexo}"></td>
+
+                                <td>
+                                    <span th:if="${m.fechaNacimiento != null}"
+                                        th:text="${#temporals.format(m.fechaNacimiento, 'dd/MM/yyyy')}">
+                                    </span>
+
+                                    <span th:if="${m.fechaNacimiento == null}" class="text-secondary">
+                                        —
+                                    </span>
+                                </td>
+
+                                <td th:text="${m.propietario.nombre + ' ' + m.propietario.apellidos}">
+                                </td>
+
+                                <!-- Acciones -->
+                                <td class="text-center">
+                                    <div class="d-flex justify-content-center gap-2">
+
+                                        <a th:href="@{/expedientes/mascota/{id}(id=${m.id})}"
+                                            class="btn btn-sm btn-outline-info">
+                                            Ver expediente
+                                        </a>
+
+                                        <a th:href="@{/mascotas/editar/{id}(id=${m.id})}"
+                                            class="btn btn-sm btn-outline-primary">
+                                            Editar
+                                        </a>
+
+                                        <form th:action="@{/mascotas/eliminar/{id}(id=${m.id})}" method="post"
+                                            onsubmit="return confirm('¿Está seguro de eliminar esta mascota?');">
+
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                                Eliminar
+                                            </button>
+                                        </form>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <!-- Estado vacío -->
+                            <tr th:if="${#lists.isEmpty(mascotas)}">
+                                <td colspan="7" class="text-center text-secondary py-5">
+
+                                    <div class="fw-semibold mb-1">
+                                        Todavía no hay mascotas registradas.
+                                    </div>
+
+                                    <small>
+                                        Utiliza el botón «Registrar mascota» para agregar la primera.
+                                    </small>
+
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
                 </div>
 
-                <div th:if="${error}"
-                     class="alert alert-danger"
-                     th:text="${error}">
+                <!-- Pie de la tarjeta -->
+                <div class="d-flex justify-content-between align-items-center p-3 border-top">
+                    <small class="text-secondary"
+                        th:text="'Mostrando ' + ${#lists.size(mascotas)} + ' mascotas registradas'">
+                        Mostrando 0 mascotas registradas
+                    </small>
                 </div>
 
-                <!-- Tarjeta principal -->
-                <div class="card border rounded-4 shadow-sm overflow-hidden">
+            </div>
 
-                    <div class="d-flex justify-content-between align-items-center border-bottom p-3">
-                        <div>
-                            <h2 class="h6 fw-semibold mb-0">
-                                Directorio de mascotas
-                            </h2>
-                            <small class="text-secondary">
-                                Mascotas y sus respectivos propietarios.
+            <p class="text-secondary mt-3 mb-0" style="font-size: .75rem;">
+                Cada mascota debe estar asociada a un propietario registrado.
+            </p>
+
+        </div>
+    </main>
+
+
+    <!-- Formulario de registro y edición -->
+    <main th:fragment="formulario" class="bg-body-tertiary min-vh-100" style="margin-left: 260px; padding-top: 56px;">
+
+        <div class="p-4">
+
+            <div class="mb-4">
+                <h1 class="h2 fw-semibold text-success-emphasis mb-1"
+                    th:text="${idMascota != null ? 'Editar mascota' : 'Registrar mascota'}">
+                    Registrar mascota
+                </h1>
+
+                <p class="text-secondary mb-0"
+                    th:text="${idMascota != null ? 'Modifica la información de la mascota.' : 'Completa la información para registrar una nueva mascota.'}">
+                    Completa la información para registrar una nueva mascota.
+                </p>
+            </div>
+
+            <!-- Mensaje general -->
+            <div th:if="${error}" class="alert alert-danger" th:text="${error}">
+            </div>
+
+            <!-- Tarjeta del formulario -->
+            <div class="card border rounded-4 shadow-sm">
+
+                <div class="card-body p-4">
+
+                    <form
+                        th:action="${idMascota != null} ? @{/mascotas/actualizar/{id}(id=${idMascota})} : @{/mascotas/guardar}"
+                        th:object="${mascotaForm}" method="post">
+
+                        <!-- Nombre -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Nombre *
+                            </label>
+
+                            <input type="text" class="form-control" th:field="*{nombre}"
+                                placeholder="Nombre de la mascota">
+
+                            <small class="text-danger" th:errors="*{nombre}">
                             </small>
                         </div>
 
-                        <span class="badge bg-success-subtle text-success-emphasis rounded-pill"
-                              th:text="${#lists.size(mascotas)} + ' registradas'">
-                            0 registradas
-                        </span>
-                    </div>
+                        <!-- Especie -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Especie *
+                            </label>
 
-                    <!-- Tabla -->
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
+                            <select class="form-select" th:field="*{especie}">
 
-                            <thead class="table-light">
-                                <tr class="text-uppercase text-secondary"
-                                    style="font-size: .7rem;">
-                                    <th class="ps-3">Nombre</th>
-                                    <th>Especie</th>
-                                    <th>Raza</th>
-                                    <th>Sexo</th>
-                                    <th>Fecha de nacimiento</th>
-                                    <th>Propietario</th>
-                                    <th class="text-center">Acciones</th>
-                                </tr>
-                            </thead>
+                                <option value="">Seleccione una especie</option>
+                                <option value="Perro">Perro</option>
+                                <option value="Gato">Gato</option>
+                                <option value="Ave">Ave</option>
+                                <option value="Conejo">Conejo</option>
+                                <option value="Roedor">Roedor</option>
+                                <option value="Reptil">Reptil</option>
+                                <option value="Otro">Otro</option>
 
-                            <tbody class="small">
+                            </select>
 
-                                <tr th:each="m : ${mascotas}">
+                            <small class="text-danger" th:errors="*{especie}">
+                            </small>
+                        </div>
 
-                                    <td class="ps-3 fw-semibold"
-                                        th:text="${m.nombre}">
-                                    </td>
+                        <!-- Raza -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Raza
+                            </label>
 
-                                    <td th:text="${m.especie}"></td>
+                            <input type="text" class="form-control" th:field="*{raza}"
+                                placeholder="Raza de la mascota (opcional)">
 
-                                    <td>
-                                        <span th:if="${m.raza != null and !m.raza.isEmpty()}"
-                                              th:text="${m.raza}">
-                                        </span>
+                            <small class="text-danger" th:errors="*{raza}">
+                            </small>
+                        </div>
 
-                                        <span th:if="${m.raza == null or m.raza.isEmpty()}"
-                                              class="text-secondary">
-                                            —
-                                        </span>
-                                    </td>
+                        <!-- Sexo -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Sexo *
+                            </label>
 
-                                    <td th:text="${m.sexo}"></td>
+                            <select class="form-select" th:field="*{sexo}">
 
-                                    <td>
-                                        <span th:if="${m.fechaNacimiento != null}"
-                                              th:text="${#temporals.format(m.fechaNacimiento, 'dd/MM/yyyy')}">
-                                        </span>
+                                <option value="">Seleccione el sexo</option>
+                                <option value="Macho">Macho</option>
+                                <option value="Hembra">Hembra</option>
 
-                                        <span th:if="${m.fechaNacimiento == null}"
-                                              class="text-secondary">
-                                            —
-                                        </span>
-                                    </td>
+                            </select>
 
-                                    <td th:text="${m.propietario.nombre + ' ' + m.propietario.apellidos}">
-                                    </td>
+                            <small class="text-danger" th:errors="*{sexo}">
+                            </small>
+                        </div>
 
-                                    <!-- Acciones -->
-                                    <td class="text-center">
-                                        <div class="d-flex justify-content-center gap-2">
+                        <!-- Fecha de nacimiento -->
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                Fecha de nacimiento
+                            </label>
 
-                                            <a th:href="@{/mascotas/editar/{id}(id=${m.id})}"
-                                               class="btn btn-sm btn-outline-primary">
-                                                Editar
-                                            </a>
+                            <input type="date" class="form-control" th:field="*{fechaNacimiento}">
 
-                                            <form th:action="@{/mascotas/eliminar/{id}(id=${m.id})}"
-                                                  method="post"
-                                                  onsubmit="return confirm('¿Está seguro de eliminar esta mascota?');">
+                            <small class="text-danger" th:errors="*{fechaNacimiento}">
+                            </small>
+                        </div>
 
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-outline-danger">
-                                                    Eliminar
-                                                </button>
+                        <!-- Propietario -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">
+                                Propietario *
+                            </label>
 
-                                            </form>
+                            <select class="form-select" th:field="*{propietarioId}">
 
-                                        </div>
-                                    </td>
+                                <option value="">
+                                    Seleccione un propietario
+                                </option>
 
-                                </tr>
+                                <option th:each="p : ${propietarios}" th:value="${p.id}"
+                                    th:text="${p.nombre + ' ' + p.apellidos + ' - ' + p.identificacion}">
+                                </option>
 
-                                <!-- Estado vacío -->
-                                <tr th:if="${#lists.isEmpty(mascotas)}">
-                                    <td colspan="7"
-                                        class="text-center text-secondary py-5">
+                            </select>
 
-                                        <div class="fw-semibold mb-1">
-                                            Todavía no hay mascotas registradas.
-                                        </div>
+                            <small class="text-danger" th:errors="*{propietarioId}">
+                            </small>
 
-                                        <small>
-                                            Utiliza el botón «Registrar mascota» para agregar la primera.
-                                        </small>
+                            <small th:if="${#lists.isEmpty(propietarios)}" class="text-danger d-block mt-1">
+                                No hay propietarios registrados. Debe registrar un propietario primero.
+                            </small>
+                        </div>
 
-                                    </td>
-                                </tr>
+                        <!-- Botones -->
+                        <div class="d-flex flex-wrap gap-2">
 
-                            </tbody>
-                        </table>
-                    </div>
+                            <button type="submit" class="btn btn-success fw-semibold"
+                                th:disabled="${#lists.isEmpty(propietarios)}"
+                                th:text="${idMascota != null ? 'Actualizar mascota' : 'Guardar mascota'}">
+                                Guardar mascota
+                            </button>
 
-                    <!-- Pie de la tarjeta -->
-                    <div class="d-flex justify-content-between align-items-center p-3 border-top">
-                        <small class="text-secondary"
-                               th:text="'Mostrando ' + ${#lists.size(mascotas)} + ' mascotas registradas'">
-                            Mostrando 0 mascotas registradas
-                        </small>
-                    </div>
-                </div>
+                            <a th:href="@{/mascotas}" class="btn btn-light border fw-semibold">
+                                Cancelar
+                            </a>
 
-                <p class="text-secondary mt-3 mb-0" style="font-size: .75rem;">
-                    Cada mascota debe estar asociada a un propietario registrado.
-                </p>
-            </div>
-        </main>
+                        </div>
 
-        <!-- Formulario de registro y edición -->
-        <main th:fragment="formulario"
-              class="bg-body-tertiary min-vh-100"
-              style="margin-left: 260px; padding-top: 56px;">
+                    </form>
 
-            <div class="p-4">
-                <div class="mb-4">
-                    <h1 class="h2 fw-semibold text-success-emphasis mb-1"
-                        th:text="${idMascota != null ? 'Editar mascota' : 'Registrar mascota'}">
-                        Registrar mascota
-                    </h1>
-                    <p class="text-secondary mb-0"
-                       th:text="${idMascota != null ? 'Modifica la información de la mascota.' : 'Completa la información para registrar una nueva mascota.'}">
-                        Completa la información para registrar una nueva mascota.
-                    </p>
-                </div>
-
-                <!-- Mensaje general -->
-                <div th:if="${error}"
-                     class="alert alert-danger"
-                     th:text="${error}">
-                </div>
-
-                <!-- Tarjeta del formulario -->
-                <div class="card border rounded-4 shadow-sm">
-                    <div class="card-body p-4">
-                        <form th:action="${idMascota != null} ? @{/mascotas/actualizar/{id}(id=${idMascota})} : @{/mascotas/guardar}"
-                              th:object="${mascotaForm}"
-                              method="post">
-
-                            <!-- Nombre -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">
-                                    Nombre *
-                                </label>
-
-                                <input type="text"
-                                       class="form-control"
-                                       th:field="*{nombre}"
-                                       placeholder="Nombre de la mascota">
-
-                                <small class="text-danger"
-                                       th:errors="*{nombre}">
-                                </small>
-                            </div>
-
-                            <!-- Especie -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">
-                                    Especie *
-                                </label>
-
-                                <select class="form-select"
-                                        th:field="*{especie}">
-
-                                    <option value="">Seleccione una especie</option>
-                                    <option value="Perro">Perro</option>
-                                    <option value="Gato">Gato</option>
-                                    <option value="Ave">Ave</option>
-                                    <option value="Conejo">Conejo</option>
-                                    <option value="Roedor">Roedor</option>
-                                    <option value="Reptil">Reptil</option>
-                                    <option value="Otro">Otro</option>
-
-                                </select>
-
-                                <small class="text-danger"
-                                       th:errors="*{especie}">
-                                </small>
-                            </div>
-
-                            <!-- Raza -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">
-                                    Raza
-                                </label>
-
-                                <input type="text"
-                                       class="form-control"
-                                       th:field="*{raza}"
-                                       placeholder="Raza de la mascota (opcional)">
-
-                                <small class="text-danger"
-                                       th:errors="*{raza}">
-                                </small>
-                            </div>
-
-                            <!-- Sexo -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">
-                                    Sexo *
-                                </label>
-
-                                <select class="form-select"
-                                        th:field="*{sexo}">
-
-                                    <option value="">Seleccione el sexo</option>
-                                    <option value="Macho">Macho</option>
-                                    <option value="Hembra">Hembra</option>
-
-                                </select>
-
-                                <small class="text-danger"
-                                       th:errors="*{sexo}">
-                                </small>
-                            </div>
-
-                            <!-- Fecha de nacimiento -->
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold">
-                                    Fecha de nacimiento
-                                </label>
-
-                                <input type="date"
-                                       class="form-control"
-                                       th:field="*{fechaNacimiento}">
-
-                                <small class="text-danger"
-                                       th:errors="*{fechaNacimiento}">
-                                </small>
-                            </div>
-
-                            <!-- Propietario -->
-                            <div class="mb-4">
-                                <label class="form-label fw-semibold">
-                                    Propietario *
-                                </label>
-
-                                <select class="form-select"
-                                        th:field="*{propietarioId}">
-
-                                    <option value="">
-                                        Seleccione un propietario
-                                    </option>
-
-                                    <option th:each="p : ${propietarios}"
-                                            th:value="${p.id}"
-                                            th:text="${p.nombre + ' ' + p.apellidos + ' - ' + p.identificacion}">
-                                    </option>
-
-                                </select>
-
-                                <small class="text-danger"
-                                       th:errors="*{propietarioId}">
-                                </small>
-
-                                <small th:if="${#lists.isEmpty(propietarios)}"
-                                       class="text-danger d-block mt-1">
-                                    No hay propietarios registrados. Debe registrar un propietario primero.
-                                </small>
-                            </div>
-
-                            <!-- Botones -->
-                            <div class="d-flex flex-wrap gap-2">
-
-                                <button type="submit"
-                                        class="btn btn-success fw-semibold"
-                                        th:disabled="${#lists.isEmpty(propietarios)}"
-                                        th:text="${idMascota != null ? 'Actualizar mascota' : 'Guardar mascota'}">
-                                    Guardar mascota
-                                </button>
-
-                                <a th:href="@{/mascotas}"
-                                   class="btn btn-light border fw-semibold">
-                                    Cancelar
-                                </a>
-                            </div>
-                        </form>
-                    </div>
                 </div>
             </div>
-        </main>
-    </body>
+
+        </div>
+    </main>
+
+</body>
+
 </html>
-
-

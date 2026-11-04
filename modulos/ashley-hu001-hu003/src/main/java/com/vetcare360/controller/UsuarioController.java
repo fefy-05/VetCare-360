@@ -7,9 +7,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+@RequestMapping("/usuarios")
 @Controller
 public class UsuarioController {
 
@@ -19,14 +21,14 @@ public class UsuarioController {
         this.service = service;
     }
 
-    @GetMapping("/usuarios")
+    @GetMapping
     public String listar(Authentication auth, Model model) {
         model.addAttribute("usuarios", service.listar());
         model.addAttribute("correoActual", auth.getName());
         return "usuarios/listado";
     }
 
-    @PostMapping("/usuarios/{id}/rol")
+    @PostMapping("/{id}/rol")
     public String cambiarRol(@PathVariable Long id, @RequestParam String rol,
             Authentication auth, RedirectAttributes ra) {
         try {
@@ -38,7 +40,7 @@ public class UsuarioController {
         return "redirect:/usuarios";
     }
 
-    @PostMapping("/usuarios/{id}/eliminar")
+    @PostMapping("/{id}/eliminar")
     public String eliminar(@PathVariable Long id, Authentication auth, RedirectAttributes ra) {
         try {
             service.eliminar(id, auth.getName());
